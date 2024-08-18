@@ -1,4 +1,4 @@
-module.exports = (code, message, data) => {
+module.exports = (code, message, data = null) => {
     return {
         meta: {
             code: code,

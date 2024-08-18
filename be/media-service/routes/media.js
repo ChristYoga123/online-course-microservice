@@ -5,6 +5,7 @@ const base64Img = require('base64-img');
 const { error, success } = require('../formatters');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const fs = require('fs');
 
 router.post('/', (req, res) => {
     const image = req.body.image;
@@ -40,4 +41,29 @@ router.get('/', async (req, res) => {
     return res.json(success(200, 'Success', mappedMedia));
 });
 
+router.delete('/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const media = await prisma.media.findFirst({
+        where: {
+            id: id
+        }
+    });
+    if(!media) {
+        return res.status(404).json(error(404, 'Media not found'));
+    }
+    // unlink image from public/images
+    fs.unlink(`./public/${media.image}`, async (err) => {
+        if(err) {
+            return res.status(500).json(error(500, err.message));
+        }
+    });
+
+    await prisma.media.delete({
+        where: {
+            id: id
+        }
+    });
+
+    return res.json(success(200, 'Image deleted successfully', media));
+});
 module.exports = router;
