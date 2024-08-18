@@ -3,7 +3,7 @@ const axios = require('axios');
 module.exports = (baseURL) => {
     return axios.create({
         baseURL: baseURL,
-        timeout: 5000,
+        timeout: parseInt(process.env.SERVICE_TIMEOUT),
         headers: {
             'Content-Type': 'application/json'
         }
