@@ -29,6 +29,15 @@ router.post('/', (req, res) => {
 
         return res.json(success(201, 'Image uploaded successfully', `${req.get('host')}/images/${filename}`));
     });
-})
+});
+
+router.get('/', async (req, res) => {
+    const media = await prisma.media.findMany();
+    const mappedMedia = media.map(m => {
+        m.image = `${req.get('host')}/${m.image}`;
+        return m;
+    });
+    return res.json(success(200, 'Success', mappedMedia));
+});
 
 module.exports = router;
